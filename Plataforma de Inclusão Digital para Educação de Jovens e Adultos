@@ -1,0 +1,174 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+# Funções de validação
+
+def validar_data(data):
+    try:
+        datetime.strptime(data, "%d/%m/%Y")
+        return True
+    except ValueError:
+        return False
+
+# Funções dos módulos
+
+def iniciar_alfabetizacao():
+    janela_alfabetizacao = tk.Toplevel()
+    janela_alfabetizacao.title("Conteúdos Interativos")
+    janela_alfabetizacao.geometry("400x300")
+
+    instrucoes = tk.Label(janela_alfabetizacao, text="Aprenda letras e palavras:", font=("Arial", 12))
+    instrucoes.pack(pady=10)
+
+    palavras = ["Casa", "Escola", "Computador", "Internet", "Livro", "Aprendizado"]
+
+    def mostrar_palavra():
+        palavra.set(palavras[contador.get() % len(palavras)])
+        contador.set(contador.get() + 1)
+
+    palavra = tk.StringVar(value="Clique para começar")
+    contador = tk.IntVar(value=0)
+
+    label_palavra = tk.Label(janela_alfabetizacao, textvariable=palavra, font=("Arial", 16))
+    label_palavra.pack(pady=10)
+
+    botao_proximo = ttk.Button(janela_alfabetizacao, text="Próxima Palavra", command=mostrar_palavra)
+    botao_proximo.pack(pady=10)
+
+
+def iniciar_capacitacao():
+    janela_capacitacao = tk.Toplevel()
+    janela_capacitacao.title("Capacitação em Informática")
+    janela_capacitacao.geometry("400x300")
+
+    conteudo = (
+        "1. Introdução ao uso do mouse e teclado.\n"
+        "2. Noções básicas de navegação segura na internet.\n"
+        "3. Como criar e usar e-mails com segurança.\n"
+        "4. Reconhecimento de sites confiáveis."
+    )
+
+    label_conteudo = tk.Label(janela_capacitacao, text=conteudo, font=("Arial", 12), justify="left", wraplength=350)
+    label_conteudo.pack(pady=10)
+
+
+def iniciar_problemas_cotidianos():
+    janela_problemas = tk.Toplevel()
+    janela_problemas.title("Resolução de Problemas Cotidianos")
+    janela_problemas.geometry("400x300")
+
+    instrucoes = tk.Label(janela_problemas, text="Simulação: Agendamento de consulta médica.", font=("Arial", 12))
+    instrucoes.pack(pady=10)
+
+    campo_nome = tk.Entry(janela_problemas)
+    campo_nome.insert(0, "Digite seu nome")
+    campo_nome.bind("<FocusIn>", lambda e: campo_nome.delete(0, tk.END))
+    campo_nome.pack(pady=5)
+
+    campo_data = tk.Entry(janela_problemas)
+    campo_data.insert(0, "Digite a data desejada (dd/mm/aaaa)")
+    campo_data.bind("<FocusIn>", lambda e: campo_data.delete(0, tk.END))
+    campo_data.pack(pady=5)
+
+    def confirmar():
+        nome = campo_nome.get().strip()
+        data = campo_data.get().strip()
+        if nome and validar_data(data):
+            resultado.config(text=f"Consulta de {nome} agendada para {data}!", fg="green")
+        else:
+            resultado.config(text="Dados inválidos. Verifique os campos.", fg="red")
+
+    botao_confirmar = ttk.Button(janela_problemas, text="Confirmar", command=confirmar)
+    botao_confirmar.pack(pady=10)
+
+    resultado = tk.Label(janela_problemas, text="", font=("Arial", 12))
+    resultado.pack(pady=10)
+
+
+def medir_desempenho():
+    janela_desempenho = tk.Toplevel()
+    janela_desempenho.title("Avaliação de Desempenho")
+    janela_desempenho.geometry("400x300")
+
+    instrucoes = tk.Label(janela_desempenho, text="Insira sua pontuação para os módulos (0 a 100):", font=("Arial", 12))
+    instrucoes.pack(pady=10)
+
+    modulos = ["Alfabetização", "Capacitação", "Resolução de Problemas"]
+    pontuacoes = {}
+
+    def salvar_pontuacoes():
+        try:
+            for modulo in modulos:
+                valor = int(entradas[modulo].get())
+                if 0 <= valor <= 100:
+                    pontuacoes[modulo] = valor
+                else:
+                    raise ValueError
+            exibir_grafico()
+        except ValueError:
+            messagebox.showerror("Erro", "Insira valores válidos entre 0 e 100 para todas as pontuações.")
+
+    def exibir_grafico():
+        nomes_modulos = list(pontuacoes.keys())
+        valores = list(pontuacoes.values())
+
+        plt.barh(nomes_modulos, valores, color="skyblue")
+        plt.title("Desempenho por Módulo")
+        plt.xlabel("Pontuação (%)")
+        plt.grid(axis='x', linestyle='--', alpha=0.7)
+        plt.show()
+
+    entradas = {}
+    for modulo in modulos:
+        label = tk.Label(janela_desempenho, text=f"{modulo}:", font=("Arial", 12))
+        label.pack()
+        entrada = tk.Entry(janela_desempenho)
+        entrada.pack()
+        entradas[modulo] = entrada
+
+    botao_salvar = ttk.Button(janela_desempenho, text="Salvar e Gerar Gráfico", command=salvar_pontuacoes)
+    botao_salvar.pack(pady=10)
+
+# Interface principal
+
+def iniciar_modulo(modulo):
+    if modulo == "Conteúdos Interativos":
+        iniciar_alfabetizacao()
+    elif modulo == "Capacitação em Informática":
+        iniciar_capacitacao()
+    elif modulo == "Problemas Cotidianos":
+        iniciar_problemas_cotidianos()
+    elif modulo == "Avaliação de Desempenho":
+        medir_desempenho()
+
+# Configuração da janela principal
+janela = tk.Tk()
+janela.title("Plataforma de Inclusão Digital para Educação de Jovens e Adultos")
+janela.geometry("400x400")
+
+# Título
+titulo = tk.Label(janela, text="Plataforma de Inclusão Digital para Educação de Jovens e Adultos", font=("Arial", 14), wraplength=350)
+titulo.pack(pady=10)
+
+# Instruções
+instrucoes = tk.Label(janela, text="Escolha uma opção para começar:", font=("Arial", 12))
+instrucoes.pack(pady=5)
+
+# Botões para módulos
+botoes_frame = tk.Frame(janela)
+botoes_frame.pack(pady=10)
+
+botoes = [
+    "Conteúdos Interativos", 
+    "Capacitação em Informática", 
+    "Problemas Cotidianos", 
+    "Avaliação de Desempenho"
+]
+for modulo in botoes:
+    botao = ttk.Button(botoes_frame, text=modulo, command=lambda m=modulo: iniciar_modulo(m))
+    botao.pack(pady=5)
+
+# Rodapé
+rodape = tk.Label(janela, text="Setor de Aplicação: Escolas públicas e institui
